@@ -1,4 +1,5 @@
 const express = require('express');
+const User = require('../models/users');
 
 /**
  * 
@@ -6,16 +7,13 @@ const express = require('express');
  * @param {express.Response} res 
  */
 
-const getAllUsers = (req, res)=>{
-    const users = [{
-        id: 1,
-        name: 'Dario'
-    },
-    {
-        id: 2,
-        name: 'Maria'
-    }]
-    res.json(users);
+const getAllUsers = async (req, res, next)=>{
+    try {
+        const users = await User.find();
+        res.json(users);
+    }catch(err){
+        next(err);
+    }
 };
 
 /**
@@ -24,16 +22,20 @@ const getAllUsers = (req, res)=>{
  * @param {express.Response} res 
  */
 
-const createUser = (req, res) => {
+const createUser = async (req, res, next) => {
 
-    const user = req.body;
-    user.id = 85689;
+    try{
+        let user = req.body;
+        user = await User.create(user);    
 
-    const result = {
-        message: 'User created',
-        user
-    }
-    res.status(201).json(result);        
+        const result = {
+            message: 'User created',
+            user
+        }
+        res.status(201).json(result);
+    }catch(err){
+        next(err);
+    }        
 };
 
 /**
@@ -41,18 +43,21 @@ const createUser = (req, res) => {
  * @param {express.Request} req 
  * @param {express.Response} res 
  */
-const updateUser = (req, res)=>{
+const updateUser = async (req, res, next)=>{
+    try{
+        const {id} = req.params;
+        let user = req.body;
+        user._id = id;
+        await User.updateOne(user);    
 
-    const {id} = req.params;
-    const user = req.body;
-
-    user.id = id;
-
-    const result = {
-        message: 'User updated',
-        user
+        const result = {
+            message: 'User updated',
+            user
+        }
+        res.json(result);
+    }catch(err){
+        next(err);
     }
-    res.json(result);
 
 };
 
@@ -74,15 +79,20 @@ const updatePartialUser = (req, res)=>{
  * @param {express.Request} req 
  * @param {express.Response} res 
  */
-const deleteUser = (req, res)=>{
-
-    const {id} = req.params;
-    //const id = req.params.id;
+const deleteUser = async (req, res, next)=>{
+    try{
+        const {id} = req.params;
+        const user = await User.findById(id);
+        user.remove();
+        //const id = req.params.id;
     
-    const result = {
-        message:`User with id: ${id} deleted`
+        const result = {
+            message:`User with id: ${id} deleted`
+        }
+        res.json(result);
+    }catch(err){
+        next(err);
     }
-    res.json(result);
 };
 
 module.exports = {
