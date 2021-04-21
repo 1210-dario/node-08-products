@@ -63,7 +63,7 @@ class ExpressServer {
                 error: {
                     code,
                     message: err.message,
-                    datail: err.data
+                    detail: err.data
                 }
             }
             res.status(code).json(body);
