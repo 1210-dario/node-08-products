@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const swaggerUi = require('swagger-ui-express');
@@ -35,6 +36,12 @@ class ExpressServer {
 
         this.app.head("/status", (req, res) =>{
             res.status(200).end();
+        });
+
+        this.app.get("/test-report", (req, res) =>{
+            res.sendFile(
+                path.join(__dirname + '../../../../postman/report.html')
+            );
         });
 
         this.app.get("/gitflow", (req, res) =>{
